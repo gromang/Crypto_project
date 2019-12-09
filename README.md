@@ -77,16 +77,16 @@ https://www.kraken.com/features/api#get-ohlc-data
 ```json
 [
   {
-    "timestamp": "2019-12-09T16:44:00.000Z", // время UTC
+    "timestamp": "2019-12-09T16:44:00.000Z",
     "open": "7416.81",
     "close": "7417.10",
     "min": "7412.88",
     "max": "7419.35",
-    "volume": "2.47167", // объём в базовой валюте - BTC
-    "volumeQuote": "18330.3675566" // объём в котируемой валюте (для BTCUSD - это USD)
+    "volume": "2.47167",
+    "volumeQuote": "18330.3675566"
   },
   {
-    ///...
+    
   }
 ]
 ```
@@ -96,10 +96,7 @@ https://www.kraken.com/features/api#get-ohlc-data
 |---	|---	|---	|---	|
 |  period	|  string 	|  да 	|   	|
 | sort  	| string  	|  да 	|   	|
-| from  	| Datetime или Number  	|  нет 	| Interval initial value.
-If sorting by timestamp is used, then Datetime, otherwise Number of index value.  	|
-| till  	|  long 	|   нет	| Interval end value
-If sorting by timestamp is used, then Datetime, otherwise Number of index value.  	|
-| limit  	|  long 	|  нет 	| Limit of candles
-Default value: 100 Max value: 1000  	|
+| from  	| Datetime или Number  	|  нет 	| Interval initial value. If sorting by timestamp is used, then Datetime, otherwise Number of index value.  	|
+| till  	|  long 	|   нет	| Interval end value. If sorting by timestamp is used, then Datetime, otherwise Number of index value.  	|
+| limit  	|  long 	|  нет 	| Limit of candles . Default value: 100 Max value: 1000  	|
 | offset 	|  long 	|  нет 	| Default value: 0  Max value: 100000  	|
