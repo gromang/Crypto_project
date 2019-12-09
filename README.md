@@ -58,8 +58,8 @@ https://www.kraken.com/features/api#get-ohlc-data
 ```
 Порядок данных в массиве - восходящий, от старых к новым.
 Параметры запроса:
-|Name   |Type	|Mandatory	|Description|
-|-------|-------|-----------|-----------|
+| Name   | Type	| Mandatory	| Description |
+|--------|------|-----------|-------------|
 |symbol	|STRING	|YES        |           |
 |interval|ENUM	|YES        |           |	
 |startTime|LONG |NO	        |           |
