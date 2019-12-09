@@ -66,7 +66,7 @@ https://www.kraken.com/features/api#get-ohlc-data
 |endTime|LONG   |NO	        |           |
 |limit  INT     |NO         |Default 500; max 1000.|
 
-|   	|   	|   	|   	|   	|
+| Name  	| Type  	| Mandatory  	| Description  	|   	|
 |---	|---	|---	|---	|---	|
 |   	|   	|   	|   	|   	|
 |   	|   	|   	|   	|   	|
