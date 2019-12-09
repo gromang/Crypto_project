@@ -23,7 +23,7 @@
 
 По данным ссылкам 4 из 5 выбранных бирж отдают минутные свечи по паре BTCUSD с различной глубиной истории
 ```
-https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1M
+https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m
 
 https://api.hitbtc.com/api/2/public/candles/BTCUSD?period=M1
 
@@ -37,23 +37,26 @@ https://www.kraken.com/features/api#get-ohlc-data
 ```
 ### Разбор возвращаемых данных по каждой бирже:
 
-* __Binance__ возвращает список списков, где каждый список содержит:
+#### __Binance__ возвращает список списков следующего вида:
 ```
 [
   [
-    1499040000000,      // Open time  в милисекундах
-    "0.01634790",       // Open
-    "0.80000000",       // High
-    "0.01575800",       // Low
-    "0.01577100",       // Close
-    "148976.11427815",  // Volume
-    1499644799999,      // Close time в милисекундах
-    "2434.19055334",    // Quote asset volume - не требуется
-    308,                // Number of trades - не требуется
-    "1756.87402397",    // Taker buy base asset volume - не требуется
-    "28.46694368",      // Taker buy quote asset volume - не требуется
-    "17928899.62484339" // Ignore. - не требуется
-  ]
+    1575886740000,         // Open time  в микросекундах
+    "7465.85000000",       // Open
+    "7471.98000000",       // High
+    "7465.36000000",       // Low
+    "7469.56000000",       // Close
+    "25.70697900",         // Volume - объём базовой валюты BTC
+    1575886799999,         // Close time в микросекундах
+    "192005.89262087",     // Quote asset volume - объём котируемой валюты USD
+    326,                   // Number of trades - не требуется
+    "14.89451100",         // Taker buy base asset volume - не требуется
+    "111259.13678615",     // Taker buy quote asset volume - не требуется
+    "0"                    // Ignore. - не требуется
+  ],
+  [
+    ...
+  ],
 ]
 ```
 Порядок данных в массиве - восходящий, от старых к новым.
@@ -69,4 +72,34 @@ https://www.kraken.com/features/api#get-ohlc-data
 
 
 
-* __Hitbtc__ возвращает 
+#### __Hitbtc__ возвращает JSON вида:
+
+```json
+[
+  {
+    "timestamp": "2019-12-09T16:44:00.000Z", // время UTC
+    "open": "7416.81",
+    "close": "7417.10",
+    "min": "7412.88",
+    "max": "7419.35",
+    "volume": "2.47167", // объём в базовой валюте - BTC
+    "volumeQuote": "18330.3675566" // объём в котируемой валюте (для BTCUSD - это USD)
+  },
+  {
+    ///...
+  }
+]
+```
+Порядок данных - настраиваемый
+Параметры запроса:
+| Имя  	| Тип  	| Обязательный  	| Описание  	|
+|---	|---	|---	|---	|
+|  period	|  string 	|  да 	|   	|
+| sort  	| string  	|  да 	|   	|
+| from  	| Datetime или Number  	|  нет 	| Interval initial value.
+If sorting by timestamp is used, then Datetime, otherwise Number of index value.  	|
+| till  	|  long 	|   нет	| Interval end value
+If sorting by timestamp is used, then Datetime, otherwise Number of index value.  	|
+| limit  	|  long 	|  нет 	| Limit of candles
+Default value: 100 Max value: 1000  	|
+| offset 	|  long 	|  нет 	| Default value: 0  Max value: 100000  	|
