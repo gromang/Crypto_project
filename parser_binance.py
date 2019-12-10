@@ -1,7 +1,7 @@
 import requests
 
 
-def get_ip_binance(url):
+def get_api_binance(url):
     try:
         result = requests.get(url)
         result.raise_for_status()
@@ -11,22 +11,24 @@ def get_ip_binance(url):
         return False
 
 
-def get_btc_usdt():
-    coin_data = get_ip_binance('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m')
-    result_news = []
-    for coin_results in coin_data:
-        result_news.append({
-            'Open_time': coin_results[0],
-            'Open': coin_results[1],
-            'High': coin_results[2],
-            'Low': coin_results[3],
-            'Close': coin_results[4],
-            'Volume': coin_results[5],
-            'Close_time': coin_results[6],
-            'Quote_asset_volume': coin_results[7]
+def get_data_binance():
+    try:
+        coin_data = get_api_binance('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m')
+        result_news = []
+        for coin_results in coin_data:
+            result_news.append({
+                'Timestamp': coin_results[0],
+                'Open': float(coin_results[1]),
+                'Close': float(coin_results[4]),
+                'High': float(coin_results[2]),
+                'Low': float(coin_results[3]),
+                'Volume': float(coin_results[5]),
             })
-    return result_news
+
+        return result_news
+    except TypeError:
+        return 'Объект не найден'
 
 
 if __name__ == "__main__":
-    print(get_btc_usdt())
+    print(get_data_binance())
