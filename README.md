@@ -173,4 +173,40 @@ https://www.kraken.com/features/api#get-ohlc-data
 | size  	|  integer 	|  нет 	| The number of data returns. Default 150, valuerange: 1-2000 	|
 
 
+### __KRAKEN__ возвращает список списков следующего вида:
 
+```js
+{
+  'error': [],
+  'result':
+    {
+      'XXBTZUSD': 
+      [
+        [
+          1575921540,   //timestamp
+          '7371.2',     //open
+          '7376.9',     //high
+          '7366.3',     //low
+          '7374.6',     //close
+          '7373.0',     //Volume-weighted average price
+          '2.95591427', //volume
+           20           // count
+        ], 
+        [
+          ...
+        ] 
+      ], 
+      'last': 1575964620
+    }
+}
+```
+
+Порядок данных в массиве - от старых к новым
+
+Параметры запроса:
+
+| Имя  	| Тип  	| Обязательный  	| Описание  	|
+|---	|---	|---	|---	|
+| pair  	| string  	|  да 	|   	|
+| interval  	|  int 	|   нет	| 1 (default), 5, 15, 30, 60, 240, 1440, 10080, 21600 	|
+| since  	|  integer 	|  нет 	| return committed OHLC data since given id (optional.  exclusive) 	|
