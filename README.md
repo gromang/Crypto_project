@@ -1,3 +1,5 @@
+[TOC]
+
 ## Crypto_project
 
 Данный проект представляет собой приложение, собирающее торговые котировки с основных крупных криптобирж и суммирующее эти данные по настраиваемым алгоритмам. Результат переносится в базу данных. С результирующими котировками в базе данных работает телеграмм-бот, и, в перспективе - торговый алгоритм.
@@ -31,11 +33,10 @@ https://api.hitbtc.com/api/2/public/candles/BTCUSD?period=M1
 https://api-pub.bitfinex.com/v2/candles/trade:1m:tBTCUSD/hist
 
 https://api.huobi.pro/market/history/kline?period=1min&size=200&symbol=btcusdt
+
+https://api.kraken.com/0/public/OHLC?pair=XBTUSD
 ```
-Пятая биржа - Kraken - отдает через https://api.kraken.com/0/public/OHLC с параметрами pair, interval и since
-```
-https://www.kraken.com/features/api#get-ohlc-data
-```
+
 ## Разбор возвращаемых данных по каждой бирже:
 
 ### __Binance__ возвращает список списков следующего вида:
