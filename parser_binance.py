@@ -2,8 +2,13 @@ import requests
 
 
 def get_api_binance(url):
+    params = {
+        'symbol': 'BTCUSDT',
+        'interval': '1m',
+    }
+
     try:
-        result = requests.get(url)
+        result = requests.get(url, params=params)
         result.raise_for_status()
         return result.json()
     except(requests.RequestException, ValueError):
@@ -13,7 +18,7 @@ def get_api_binance(url):
 
 def get_data_binance():
     try:
-        coin_data = get_api_binance('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m')
+        coin_data = get_api_binance('https://api.binance.com/api/v3/klines')
         result_news = []
         for coin_results in coin_data:
             result_news.append({
