@@ -12,6 +12,7 @@
 * максимальная цена  - High
 * время цены open    - Open time
 * интервал свечи     - Interval (1 min, 2 min, 5 min etc.)
+
 Для построения суммарного свечного графика требуется еще один параметр:
 * объем свечи        - Volume
 
@@ -134,7 +135,7 @@ https://www.kraken.com/features/api#get-ohlc-data
 | sort 	|  int32 	|  нет 	| if = 1 it sorts results returned with old > new  	|
 
 
-### __HUOBI__ возвращает список списков следующего вида:
+### __HUOBI__ возвращает JSON следующего вида:
 
 ```json
 {
@@ -173,7 +174,7 @@ https://www.kraken.com/features/api#get-ohlc-data
 | size  	|  integer 	|  нет 	| The number of data returns. Default 150, valuerange: 1-2000 	|
 
 
-### __KRAKEN__ возвращает список списков следующего вида:
+### __KRAKEN__ возвращает массив следующего вида:
 
 ```js
 {
