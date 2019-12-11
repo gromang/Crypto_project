@@ -1,10 +1,10 @@
 import requests
 
 
-def get_api_binance(url):
+def get_api_binance(url, trading_couple, time_interval):
     params = {
-        'symbol': 'BTCUSDT',
-        'interval': '1m',
+        'symbol': trading_couple,
+        'interval': time_interval,
     }
 
     try:
@@ -16,9 +16,10 @@ def get_api_binance(url):
         return False
 
 
-def get_data_binance():
+def get_data_binance(trading_couple='BTCUSDT', time_interval='1m'):
     try:
-        coin_data = get_api_binance('https://api.binance.com/api/v3/klines')
+        coin_data = get_api_binance('https://api.binance.com/api/v3/klines', trading_couple, time_interval)
+
         result_news = []
         for coin_results in coin_data:
             result_news.append({
@@ -32,7 +33,8 @@ def get_data_binance():
 
         return result_news
     except TypeError:
-        return 'Объект не найден'
+        print('Объект не найден')
+        return False
 
 
 if __name__ == "__main__":
