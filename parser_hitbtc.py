@@ -2,10 +2,11 @@ from datetime import datetime
 import requests
 
 
-def get_api_hitbtc(url, time_interval):
+def get_api_hitbtc(url, number_of_data, time_interval):
     params = {
 
         'period': time_interval,
+        'limit': number_of_data
     }
 
     try:
@@ -17,9 +18,10 @@ def get_api_hitbtc(url, time_interval):
         return False
 
 
-def get_data_hitbtc(trading_couple='BTCUSD', time_interval='M1'):
+def get_data_hitbtc(trading_couple='BTCUSD', time_interval='M1', number_of_data='150'):
     try:
-        coin_data = get_api_hitbtc('https://api.hitbtc.com/api/2/public/candles/' + trading_couple, time_interval)
+        coin_data = get_api_hitbtc('https://api.hitbtc.com/api/2/public/candles/' + trading_couple,
+                                   number_of_data, time_interval)
 
         result_news = []
         for coin_results in coin_data:
@@ -40,4 +42,4 @@ def get_data_hitbtc(trading_couple='BTCUSD', time_interval='M1'):
 
 
 if __name__ == "__main__":
-    print(get_data_hitbtc(trading_couple='ETHBTC'))
+    print(len(get_data_hitbtc(trading_couple='ETHBTC')))
