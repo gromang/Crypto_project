@@ -9,15 +9,21 @@ logging.basicConfig(filename='parser.log', level=logging.INFO, filemode='w')
 
 def get_data_hitbtc(symbol, interval):
     exchange = 'hitbtc'
-    # Забираем из словаря обозначения пары(sym) и интервала (intr)
+    # Забираем из словаря обозначения пары(sym) и интервала(intr)
     sym = exch_pairs[exchange][symbol]
     intr = exch_interval[exchange][interval]
     api_url = 'https://api.hitbtc.com/api/2/public/candles/'
+    params = {
+        'limit': '5',
+        'period': intr,
+    }
+
     try:
-        get_data = requests.get(f'{api_url}{sym}?limit=5&period={intr}', timeout=5)
+        get_data = requests.get(f'{api_url}{sym}', params=params, timeout=5)
         get_data.raise_for_status()
         logging.info(get_data.url)
         coin_data = get_data.json()
+        logging.info(coin_data)
         candle = coin_data[-1]
         logging.info(candle)
         # Преобразование даты в timestamp
