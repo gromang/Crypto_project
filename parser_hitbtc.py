@@ -1,45 +1,43 @@
 from datetime import datetime
+import logging
 import requests
 
+from accordance import *
 
-def get_api_hitbtc(url, number_of_data, time_interval):
-    params = {
+logging.basicConfig(filename='parser.log', level=logging.INFO, filemode='w')
 
-        'period': time_interval,
-        'limit': number_of_data
-    }
 
+def get_data_hitbtc(symbol, interval):
+    exchange = 'hitbtc'
+    # Забираем из словаря обозначения пары(sym) и интервала (intr)
+    sym = exch_pairs[exchange][symbol]
+    intr = exch_interval[exchange][interval]
+    api_url = 'https://api.hitbtc.com/api/2/public/candles/'
     try:
-        result = requests.get(url, params=params)
-        result.raise_for_status()
-        return result.json()
+        get_data = requests.get(f'{api_url}{sym}?limit=5&period={intr}', timeout=5)
+        get_data.raise_for_status()
+        logging.info(get_data.url)
+        coin_data = get_data.json()
+        candle = coin_data[-1]
+        logging.info(candle)
+        # Преобразование даты в timestamp
+        data_time = datetime.strptime(candle['timestamp'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        # Преобразование данные к нужному формату
+        ohlcv = {
+            'Timestamp': round(data_time.timestamp()),
+            'Open': round(float(candle['open']), 1),
+            'Close': round(float(candle['close']), 1),
+            'High': round(float(candle['max']), 1),
+            'Low': round(float(candle['min']), 1),
+            'Volume': round(float(candle['volume']), 10)
+        }
+
+        logging.info(f'candle from hitbtc : {ohlcv}')
+        return ohlcv
     except(requests.RequestException, ValueError):
         print('Сетевая ошибка')
         return False
 
 
-def get_data_hitbtc(trading_couple='BTCUSD', time_interval='M1', number_of_data='150'):
-    try:
-        coin_data = get_api_hitbtc('https://api.hitbtc.com/api/2/public/candles/' + trading_couple,
-                                   number_of_data, time_interval)
-
-        result_news = []
-        for coin_results in coin_data:
-            data_time = datetime.strptime(coin_results['timestamp'], '%Y-%m-%dT%H:%M:%S.%fZ')
-            result_news.append({
-                'Timestamp': round(data_time.timestamp()),
-                'Open': float(coin_results['open']),
-                'Close': float(coin_results['close']),
-                'High': float(coin_results['max']),
-                'Low': float(coin_results['min']),
-                'Volume': round(float(coin_results['volume']), 10),
-            })
-
-        return result_news
-    except TypeError:
-        print('Объект не найден')
-        return False
-
-
 if __name__ == "__main__":
-    print(len(get_data_hitbtc(trading_couple='ETHBTC')))
+    print((get_data_hitbtc('BTCUSD', '1m')))
