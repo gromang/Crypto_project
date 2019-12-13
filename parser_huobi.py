@@ -1,45 +1,46 @@
+import logging
 import requests
 
+from accordance import *
 
-def get_api_huobi(url, time_interval, number_of_data, trading_couple):
+logging.basicConfig(filename='parser.log', level=logging.INFO, filemode='w')
+
+
+def get_data_huobi(symbol, interval):
+    exchange = 'huobi'
+    # Забираем из словаря обозначения пары(sym) и интервала (intr)
+    sym = exch_pairs[exchange][symbol]
+    intr = exch_interval[exchange][interval]
+    api_url = 'https://api.huobi.pro/market/history/kline'
     params = {
-        'period': time_interval,
-        'size': number_of_data,
-        'symbol': trading_couple,
+        'period': intr,
+        'size': '5',
+        'symbol': sym,
     }
 
     try:
-        result = requests.get(url, params=params)
-        print(result)
-        result.raise_for_status()
-        return result.json()
+        get_data = requests.get(f'{api_url}', params=params, timeout=5)
+        get_data.raise_for_status()
+        logging.info(get_data.url)
+        coin_data = get_data.json()
+        candle = coin_data['data'][0]
+        logging.info(candle)
+        # Преобразование данных к нужному формату
+        ohlcv = {
+            'Timestamp': candle['id'],
+            'Open': round(float(candle['open']), 1),
+            'Close': round(float(candle['close']), 1),
+            'High': round(float(candle['high']), 1),
+            'Low': round(float(candle['low']), 1),
+            'Volume': round(float(candle['amount']), 10)
+        }
+
+        logging.info(f'candle from huobi : {ohlcv}')
+        return ohlcv
     except(requests.RequestException, ValueError):
         print('Сетевая ошибка')
         return False
 
 
-def get_data_huobi(trading_couple='btcusdt', time_interval='1min', number_of_data='150'):
-    try:
-        coin_data = get_api_huobi('https://api.huobi.pro/market/history/kline',
-                                  time_interval, number_of_data, trading_couple)
-
-        result_news = []
-        for coin_results in coin_data['data']:
-            result_news.append({
-                'Timestamp': coin_results['id'],
-                'Open': float(coin_results['open']),
-                'Close': float(coin_results['close']),
-                'High': float(coin_results['high']),
-                'Low': float(coin_results['low']),
-                'Volume': float(coin_results['amount']),
-
-            })
-
-        return result_news
-    except TypeError:
-        print('Объект не найден')
-        return False
-
-
 if __name__ == "__main__":
-    print(len(get_data_huobi(trading_couple='ethusdt', number_of_data='300')))
+    print((get_data_huobi('BTCUSD', '1m')))
