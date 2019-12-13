@@ -17,7 +17,7 @@ def get_data_kraken(symbol, interval):
     try:
         get_data = requests.get(api_url, params=params, timeout=5)
         get_data.raise_for_status()
-        logging.info(get_data.url)
+        logging.info(f"KRAKEN API : {get_data.url}")
         coin_data = get_data.json()
         # Так как в запросе нельзя настроить глубину выдачи данных
         # то запрос отдает несколько сотен свечей. Нам нужна для расчета
@@ -29,7 +29,7 @@ def get_data_kraken(symbol, interval):
         # то есть имя валютной пары разбито на X_XBT_Z_USD
         for candle in coin_data["result"][f"X{sym[:3]}Z{sym[3:]}"]:
             if candle[0] == last_minute:
-                logging.info(candle)
+                logging.info(f"KRAKEN initial candle : {candle}")
                 ohlcv = {
                     "Timestamp": candle[0],
                     "Open": float(candle[1]),
@@ -38,7 +38,7 @@ def get_data_kraken(symbol, interval):
                     "Low": float(candle[3]),
                     "Volume": float(candle[6]),
                 }
-                logging.info(f"candle from kraken : {ohlcv}")
+                logging.info(f"KRAKEN result candle : {ohlcv}")
                 return ohlcv
 
     except (requests.RequestException, ValueError):

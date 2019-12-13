@@ -2,7 +2,7 @@ import requests
 import logging
 from accordance import *
 
-logging.basicConfig(filename="parser.log", level=logging.INFO, filemode="w")
+logging.basicConfig(filename="parser.log", level=logging.INFO, filemode="w", )
 
 
 def get_data_bitfinex(symbol, interval):
@@ -13,10 +13,10 @@ def get_data_bitfinex(symbol, interval):
     try:
         get_data = requests.get(f"{api_url}{intr}:{sym}/hist?limit=2", timeout=5)
         get_data.raise_for_status()
-        logging.info(get_data.url)
+        logging.info(f"BITFINEX API : {get_data.url}")
         coin_data = get_data.json()
         candle = coin_data[-1]
-        logging.info(candle)
+        logging.info(f"BITFINEX initial candle : {candle}")
         ohlcv = {
             "Timestamp": int(candle[0] / 1000),
             "Open": round(candle[1], 1),
@@ -25,10 +25,11 @@ def get_data_bitfinex(symbol, interval):
             "Low": round(candle[4], 1),
             "Volume": round(candle[5], 10),
         }
-        logging.info(f"candle from bitfinex : {ohlcv}")
+        logging.info(f"BITFINEX result : {ohlcv}")
         return ohlcv
 
-    except (requests.RequestException, ValueError):
+    except (requests.RequestException, ValueError) as err:
+        logging.info(err)
         return False
 
 
