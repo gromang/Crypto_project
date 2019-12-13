@@ -22,7 +22,7 @@ def get_data_hitbtc(symbol, interval):
         logging.info(candle)
         # Преобразование даты в timestamp
         data_time = datetime.strptime(candle['timestamp'], '%Y-%m-%dT%H:%M:%S.%fZ')
-        # Преобразование данные к нужному формату
+        # Преобразование данных к нужному формату
         ohlcv = {
             'Timestamp': round(data_time.timestamp()),
             'Open': round(float(candle['open']), 1),
