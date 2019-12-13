@@ -1,41 +1,46 @@
+import logging
 import requests
 
+from accordance import *
 
-def get_api_binance(url, trading_couple, time_interval):
+logging.basicConfig(filename='parser.log', level=logging.INFO, filemode='w')
+
+
+def get_data_binance(symbol, interval):
+    exchange = 'binance'
+    # Забираем из словаря обозначения пары(sym) и интервала(intr)
+    sym = exch_pairs[exchange][symbol]
+    intr = exch_interval[exchange][interval]
+    api_url = 'https://api.binance.com/api/v3/klines'
     params = {
-        'symbol': trading_couple,
-        'interval': time_interval,
+        'symbol': sym,
+        'interval': intr,
     }
 
     try:
-        result = requests.get(url, params=params)
-        result.raise_for_status()
-        return result.json()
+        get_data = requests.get(f'{api_url}', params=params, timeout=5)
+        get_data.raise_for_status()
+        logging.info(get_data.url)
+        coin_data = get_data.json()
+        logging.info(coin_data)
+        candle = coin_data[-1]
+        logging.info(candle)
+        # Преобразование данных к нужному формату
+        ohlcv = {
+            'Timestamp': round(candle[0] / 1000),
+            'Open': round(float(candle[1]), 1),
+            'Close': round(float(candle[4]), 1),
+            'High': round(float(candle[2]), 1),
+            'Low': round(float(candle[3]), 1),
+            'Volume': round(float(candle[5]), 10)
+        }
+
+        logging.info(f'candle from binance : {ohlcv}')
+        return ohlcv
     except(requests.RequestException, ValueError):
-        print("Сетевая ошибка")
-        return False
-
-
-def get_data_binance(trading_couple='BTCUSDT', time_interval='1m'):
-    try:
-        coin_data = get_api_binance('https://api.binance.com/api/v3/klines', trading_couple, time_interval)
-
-        result_news = []
-        for coin_results in coin_data:
-            result_news.append({
-                'Timestamp': coin_results[0],
-                'Open': float(coin_results[1]),
-                'Close': float(coin_results[4]),
-                'High': float(coin_results[2]),
-                'Low': float(coin_results[3]),
-                'Volume': float(coin_results[5]),
-            })
-
-        return result_news
-    except TypeError:
-        print('Объект не найден')
+        print('Сетевая ошибка')
         return False
 
 
 if __name__ == "__main__":
-    print(get_data_binance())
+    print(get_data_binance('BTCUSD', '1m'))
