@@ -20,11 +20,10 @@ def get_data_binance(symbol, interval):
     try:
         get_data = requests.get(f'{api_url}', params=params, timeout=5)
         get_data.raise_for_status()
-        logging.info(get_data.url)
+        logging.info(f"BINANCE API : {get_data.url}")
         coin_data = get_data.json()
-        logging.info(coin_data)
         candle = coin_data[-1]
-        logging.info(candle)
+        logging.info(f"BINANCE initial candle : {candle}")
         # Преобразование данных к нужному формату
         ohlcv = {
             'Timestamp': round(candle[0] / 1000),
@@ -35,7 +34,7 @@ def get_data_binance(symbol, interval):
             'Volume': round(float(candle[5]), 10)
         }
 
-        logging.info(f'candle from binance : {ohlcv}')
+        logging.info(f"BINANCE result : {ohlcv}")
         return ohlcv
     except(requests.RequestException, ValueError):
         print('Сетевая ошибка')

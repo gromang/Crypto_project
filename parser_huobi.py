@@ -21,10 +21,10 @@ def get_data_huobi(symbol, interval):
     try:
         get_data = requests.get(f'{api_url}', params=params, timeout=5)
         get_data.raise_for_status()
-        logging.info(get_data.url)
+        logging.info(f"Huobi API : {get_data.url}")
         coin_data = get_data.json()
         candle = coin_data['data'][0]
-        logging.info(candle)
+        logging.info(f"Huobi initial candle : {candle}")
         # Преобразование данных к нужному формату
         ohlcv = {
             'Timestamp': candle['id'],
@@ -35,7 +35,7 @@ def get_data_huobi(symbol, interval):
             'Volume': round(float(candle['amount']), 10)
         }
 
-        logging.info(f'candle from huobi : {ohlcv}')
+        logging.info(f'Huobi result : {ohlcv}')
         return ohlcv
     except(requests.RequestException, ValueError):
         print('Сетевая ошибка')

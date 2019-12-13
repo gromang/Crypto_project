@@ -21,11 +21,11 @@ def get_data_hitbtc(symbol, interval):
     try:
         get_data = requests.get(f'{api_url}{sym}', params=params, timeout=5)
         get_data.raise_for_status()
-        logging.info(get_data.url)
+        logging.info(f"HitBTC API : {get_data.url}")
         coin_data = get_data.json()
         logging.info(coin_data)
         candle = coin_data[-1]
-        logging.info(candle)
+        logging.info(f"HitBTC initial candle : {candle}")
         # Преобразование даты в timestamp
         data_time = datetime.strptime(candle['timestamp'], '%Y-%m-%dT%H:%M:%S.%fZ')
         # Преобразование данных к нужному формату
@@ -38,7 +38,7 @@ def get_data_hitbtc(symbol, interval):
             'Volume': round(float(candle['volume']), 10)
         }
 
-        logging.info(f'candle from hitbtc : {ohlcv}')
+        logging.info(f"HitBTC result : {ohlcv}")
         return ohlcv
     except(requests.RequestException, ValueError):
         print('Сетевая ошибка')
