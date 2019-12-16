@@ -4,8 +4,6 @@ from parser_hitbtc import *
 from parser_huobi import *
 from parser_kraken import *
 
-from collections import Counter
-
 
 def final_ohlcv(symbol, interval):
     ohlcv_list = []
