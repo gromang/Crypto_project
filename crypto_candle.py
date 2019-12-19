@@ -4,14 +4,16 @@ import requests
 
 from datetime import datetime
 
+logging.basicConfig(filename="parser.log", level=logging.INFO, filemode="w")
+
 
 class CryptoCandle:
-    def __init__(self, symbol, interval="1m"):
-        logging.basicConfig(filename="parser.log",level=logging.INFO, filemode="w")
+    def __init__(self, symbol, interval="1m", settings_path="relations.json"):
         self.symbol = symbol.upper()
         self.interval = interval.lower()
         self.data = {}
-        with open("relations.json", "r") as json_file:
+        self.settings_path = settings_path
+        with open(self.settings_path, "r") as json_file:
             self.relation = json.load(json_file)
 
     def binance(self):
@@ -26,7 +28,10 @@ class CryptoCandle:
         try:
             get_data = requests.get(f"{api_url}", params=params, timeout=5)
             get_data.raise_for_status()
-        except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as err:
+        except (
+            requests.exceptions.RequestException,
+            requests.exceptions.HTTPError,
+        ) as err:
             logging.error(f"{exchange.upper()} ERROR: {err}")
             return False
         logging.info(f"{exchange.upper()} API : {get_data.url}")
@@ -44,7 +49,6 @@ class CryptoCandle:
         }
         logging.info(f"{exchange.upper()} result : {ohlcv}")
         return ohlcv
-        
 
     def bitfinex(self):
         exchange = "bitfinex"
@@ -54,9 +58,12 @@ class CryptoCandle:
         try:
             get_data = requests.get(f"{api_url}{intr}:{sym}/hist?limit=2", timeout=5)
             get_data.raise_for_status()
-        except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as err:
+        except (
+            requests.exceptions.RequestException,
+            requests.exceptions.HTTPError,
+        ) as err:
             logging.error(f"{exchange.upper()} ERROR: {err}")
-            return False   
+            return False
         logging.info(f"{exchange.upper()} API : {get_data.url}")
         coin_data = get_data.json()
         logging.info(coin_data)
@@ -72,7 +79,6 @@ class CryptoCandle:
         }
         logging.info(f"{exchange.upper()} result : {ohlcv}")
         return ohlcv
-        
 
     def hitbtc(self):
         exchange = "hitbtc"
@@ -86,9 +92,12 @@ class CryptoCandle:
         try:
             get_data = requests.get(f"{api_url}{sym}", params=params, timeout=5)
             get_data.raise_for_status()
-        except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as err:
+        except (
+            requests.exceptions.RequestException,
+            requests.exceptions.HTTPError,
+        ) as err:
             logging.error(f"{exchange.upper()} ERROR: {err}")
-            return False 
+            return False
         logging.info(f"{exchange.upper()} API : {get_data.url}")
         coin_data = get_data.json()
         logging.info(coin_data)
@@ -105,7 +114,6 @@ class CryptoCandle:
         }
         logging.info(f"{exchange.upper()} result : {ohlcv}")
         return ohlcv
-        
 
     def huobi(self):
         exchange = "huobi"
@@ -120,9 +128,12 @@ class CryptoCandle:
         try:
             get_data = requests.get(f"{api_url}", params=params, timeout=5)
             get_data.raise_for_status()
-        except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as err:
+        except (
+            requests.exceptions.RequestException,
+            requests.exceptions.HTTPError,
+        ) as err:
             logging.error(f"{exchange.upper()} ERROR: {err}")
-            return False    
+            return False
         logging.info(f"{exchange.upper()} API : {get_data.url}")
         coin_data = get_data.json()
         candle = coin_data["data"][1]
@@ -137,7 +148,6 @@ class CryptoCandle:
         }
         logging.info(f"{exchange.upper()} result : {ohlcv}")
         return ohlcv
-        
 
     def kraken(self):
         exchange = "kraken"
@@ -151,9 +161,12 @@ class CryptoCandle:
         try:
             get_data = requests.get(api_url, params=params, timeout=5)
             get_data.raise_for_status()
-        except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as err:
+        except (
+            requests.exceptions.RequestException,
+            requests.exceptions.HTTPError,
+        ) as err:
             logging.error(f"{exchange.upper()} ERROR: {err}")
-            return False    
+            return False
         logging.info(f"{exchange.upper()} API : {get_data.url}")
         coin_data = get_data.json()
         # Так как в запросе нельзя настроить глубину выдачи данных
@@ -182,7 +195,10 @@ class CryptoCandle:
         try:
             get_utc_time = requests.get("https://yandex.com/time/sync.json")
             get_utc_time.raise_for_status()
-        except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as err:
+        except (
+            requests.exceptions.RequestException,
+            requests.exceptions.HTTPError,
+        ) as err:
             logging.error(f"GET TIME ERROR: {err}")
             return False
         get_utc_time = get_utc_time.json()
@@ -196,7 +212,6 @@ class CryptoCandle:
         )
         logging.info(f"Formed candle time: {ts}")
         return ts
-        
 
     def result_candle(self):
         candle_time = self.get_previous_candle_time()
@@ -221,7 +236,7 @@ class CryptoCandle:
             if kraken_candle and kraken_candle["Timestamp"] == candle_time:
                 ohlcv_list.append(kraken_candle)
 
-            if len(ohlcv_list)>0:
+            if len(ohlcv_list) > 0:
                 sum_vol = 0
                 sum_open = 0
                 sum_close = 0
