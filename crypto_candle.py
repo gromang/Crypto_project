@@ -270,8 +270,9 @@ class CryptoCandle:
             logging.error("time for the previous candle is not received")
             return False
 
-    def adding_data_to_database(self):
-        """Принимает словарь и записывает его в базу данных"""
+    def adding_data_to_database(self, table_database: str):
+        """Метод принимает название таблицы базы данных, обрабатывает словарь
+         и записывает его в базу данных"""
 
         final_ohlcv = self.result_candle()
         try:
@@ -288,7 +289,7 @@ class CryptoCandle:
                 cur = conn.cursor()
                 # Запись в базу данных
                 cur.execute(
-                    """INSERT INTO "Crypto_project" ("Timestamp", "Open", "Close", "High", "Low", "Volume") 
+                    f"""INSERT INTO "{table_database}" ("Timestamp", "Open", "Close", "High", "Low", "Volume") 
                     VALUES(%s,%s,%s,%s,%s,%s)""", (final_ohlcv['Timestamp'], final_ohlcv['Open'], final_ohlcv['Close'],
                                                    final_ohlcv['High'], final_ohlcv['Low'], final_ohlcv['Volume']
                                                    )
@@ -306,4 +307,4 @@ class CryptoCandle:
 
 if __name__ == "__main__":
     candle = CryptoCandle("BTCUSD", "1m")
-    candle.adding_data_to_database()
+    candle.adding_data_to_database('Crypto_project')
