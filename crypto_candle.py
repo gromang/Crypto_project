@@ -295,7 +295,7 @@ class CryptoCandle:
                 cur = conn.cursor()
                 # Запись в базу данных
                 cur.execute(
-                    f"""INSERT INTO "{self.table_database}" ("Timestamp", "Open", "Close", "High", "Low", "Volume") 
+                    f"""INSERT INTO "{table_database}" ("Timestamp", "Open", "Close", "High", "Low", "Volume") 
                     VALUES(%s,%s,%s,%s,%s,%s)""",
                     (
                         final_ohlcv["Timestamp"],
