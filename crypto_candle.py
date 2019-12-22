@@ -58,7 +58,8 @@ class CryptoCandle:
         intr = self.relation[exchange][self.interval]
         api_url = self.relation[exchange]["candle_api"]
         try:
-            get_data = requests.get(f"{api_url}{intr}:{sym}/hist?limit=2", timeout=5)
+            get_data = requests.get(
+                f"{api_url}{intr}:{sym}/hist?limit=2", timeout=5)
             get_data.raise_for_status()
         except (
             requests.exceptions.RequestException,
@@ -92,7 +93,8 @@ class CryptoCandle:
             "period": intr,
         }
         try:
-            get_data = requests.get(f"{api_url}{sym}", params=params, timeout=5)
+            get_data = requests.get(
+                f"{api_url}{sym}", params=params, timeout=5)
             get_data.raise_for_status()
         except (
             requests.exceptions.RequestException,
@@ -105,7 +107,8 @@ class CryptoCandle:
         logging.info(coin_data)
         candle = coin_data[-2]
         logging.info(f"{exchange.upper()} initial candle : {candle}")
-        data_time = datetime.strptime(candle["timestamp"], "%Y-%m-%dT%H:%M:%S.%fZ")
+        data_time = datetime.strptime(
+            candle["timestamp"], "%Y-%m-%dT%H:%M:%S.%fZ")
         ohlcv = {
             "Timestamp": round(data_time.timestamp() + 10800),
             "Open": round(float(candle["open"]), 1),
@@ -207,10 +210,12 @@ class CryptoCandle:
         # Забираем и форматируем Timestamp (отбрасываем милисекунды)
         utc_ts = int(str(get_utc_time["time"])[:-3])
         # Получаем текущую минуту
-        current_minute_time = datetime.fromtimestamp(utc_ts).strftime("%Y-%m-%d %H:%M")
+        current_minute_time = datetime.fromtimestamp(
+            utc_ts).strftime("%Y-%m-%d %H:%M")
         # Получаем timestamp предыдущей минуты
         ts = int(
-            datetime.strptime(current_minute_time, "%Y-%m-%d %H:%M").timestamp() - 60
+            datetime.strptime(current_minute_time,
+                              "%Y-%m-%d %H:%M").timestamp() - 60
         )
         logging.info(f"Formed candle time: {ts}")
         return ts
@@ -298,8 +303,8 @@ class CryptoCandle:
                         final_ohlcv["Close"],
                         final_ohlcv["High"],
                         final_ohlcv["Low"],
-                        final_ohlcv["Volume"],
-                    ),
+                        final_ohlcv["Volume"]
+                    )
                 )
 
                 conn.commit()
