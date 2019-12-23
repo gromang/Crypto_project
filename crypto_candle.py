@@ -43,10 +43,10 @@ class CryptoCandle:
         # Преобразование данных к нужному формату
         ohlcv = {
             "Timestamp": round(candle[0] / 1000),
-            "Open": round(float(candle[1]), 1),
-            "Close": round(float(candle[4]), 1),
-            "High": round(float(candle[2]), 1),
-            "Low": round(float(candle[3]), 1),
+            "Open": round(float(candle[1]), 5),
+            "Close": round(float(candle[4]), 5),
+            "High": round(float(candle[2]), 5),
+            "Low": round(float(candle[3]), 5),
             "Volume": round(float(candle[5]), 10),
         }
         logging.info(f"{exchange.upper()} result : {ohlcv}")
@@ -69,15 +69,15 @@ class CryptoCandle:
             return False
         logging.info(f"{exchange.upper()} API : {get_data.url}")
         coin_data = get_data.json()
-        logging.info(coin_data)
+        logging.info(f"{exchange.upper()} Get Data: {coin_data}")
         candle = coin_data[-1]
         logging.info(f"{exchange.upper()} initial candle : {candle}")
         ohlcv = {
             "Timestamp": int(candle[0] / 1000),
-            "Open": round(candle[1], 1),
-            "Close": round(candle[2], 1),
-            "High": round(candle[3], 1),
-            "Low": round(candle[4], 1),
+            "Open": round(candle[1], 5),
+            "Close": round(candle[2], 5),
+            "High": round(candle[3], 5),
+            "Low": round(candle[4], 5),
             "Volume": round(candle[5], 10),
         }
         logging.info(f"{exchange.upper()} result : {ohlcv}")
@@ -104,17 +104,17 @@ class CryptoCandle:
             return False
         logging.info(f"{exchange.upper()} API : {get_data.url}")
         coin_data = get_data.json()
-        logging.info(coin_data)
+        logging.info(f"{exchange.upper()} Get Data: {coin_data}")
         candle = coin_data[-2]
         logging.info(f"{exchange.upper()} initial candle : {candle}")
         data_time = datetime.strptime(
             candle["timestamp"], "%Y-%m-%dT%H:%M:%S.%fZ")
         ohlcv = {
             "Timestamp": round(data_time.timestamp() + 10800),
-            "Open": round(float(candle["open"]), 1),
-            "Close": round(float(candle["close"]), 1),
-            "High": round(float(candle["max"]), 1),
-            "Low": round(float(candle["min"]), 1),
+            "Open": round(float(candle["open"]), 5),
+            "Close": round(float(candle["close"]), 5),
+            "High": round(float(candle["max"]), 5),
+            "Low": round(float(candle["min"]), 5),
             "Volume": round(float(candle["volume"]), 10),
         }
         logging.info(f"{exchange.upper()} result : {ohlcv}")
@@ -145,10 +145,10 @@ class CryptoCandle:
         logging.info(f"{exchange.upper()} initial candle : {candle}")
         ohlcv = {
             "Timestamp": candle["id"],
-            "Open": round(float(candle["open"]), 1),
-            "Close": round(float(candle["close"]), 1),
-            "High": round(float(candle["high"]), 1),
-            "Low": round(float(candle["low"]), 1),
+            "Open": round(float(candle["open"]), 5),
+            "Close": round(float(candle["close"]), 5),
+            "High": round(float(candle["high"]), 5),
+            "Low": round(float(candle["low"]), 5),
             "Volume": round(float(candle["amount"]), 10),
         }
         logging.info(f"{exchange.upper()} result : {ohlcv}")
@@ -232,10 +232,10 @@ class CryptoCandle:
             kraken_candle = self.kraken()
 
             # Формируем список последних свечей
-            if bitfinex_candle and bitfinex_candle["Timestamp"] == candle_time:
-                ohlcv_list.append(bitfinex_candle)
             if binance_candle and binance_candle["Timestamp"] == candle_time:
                 ohlcv_list.append(binance_candle)
+            if bitfinex_candle and bitfinex_candle["Timestamp"] == candle_time:
+                ohlcv_list.append(bitfinex_candle)
             if hitbtc_candle and hitbtc_candle["Timestamp"] == candle_time:
                 ohlcv_list.append(hitbtc_candle)
             if huobi_candle and huobi_candle["Timestamp"] == candle_time:
@@ -258,11 +258,11 @@ class CryptoCandle:
                     sum_low += c["Low"] * c["Volume"] / sum_vol
                 sum_ohlcv = {
                     "Timestamp": candle_time,
-                    "Open": round(sum_open, 1),
-                    "Close": round(sum_close, 1),
-                    "High": round(sum_high, 1),
-                    "Low": round(sum_low, 1),
-                    "Volume": round(sum_vol, 1),
+                    "Open": round(sum_open, 5),
+                    "Close": round(sum_close, 5),
+                    "High": round(sum_high, 5),
+                    "Low": round(sum_low, 5),
+                    "Volume": round(sum_vol, 10),
                 }
                 logging.info(
                     f"Final {self.interval} candle for {self.symbol} equal : {sum_ohlcv}"
@@ -295,7 +295,7 @@ class CryptoCandle:
                 cur = conn.cursor()
                 # Запись в базу данных
                 cur.execute(
-                    f"""INSERT INTO "{self.table_database}" ("Timestamp", "Open", "Close", "High", "Low", "Volume") 
+                    f"""INSERT INTO "{table_database}" ("Timestamp", "Open", "Close", "High", "Low", "Volume") 
                     VALUES(%s,%s,%s,%s,%s,%s)""",
                     (
                         final_ohlcv["Timestamp"],
