@@ -1,21 +1,25 @@
 from datetime import datetime
 import json
 import logging
+import os
 import psycopg2
 import requests
 
-from config import database
+from config import database, json_os_path, parser_log_path
 
-logging.basicConfig(filename="parser.log", level=logging.INFO, filemode="w")
+now = datetime.now()
+logging.basicConfig(filename=f"{parser_log_path[os.name]}{now.strftime('%Y-%m-%d__%H')}.log", level=logging.INFO,
+                    filemode="a", format='%(levelname)s %(asctime)s : %(message)s')
+logging.info(f'-------------------{now}-------------------')
 
 
 class CryptoCandle:
-    def __init__(self, symbol, interval="1m", settings_path="relations.json"):
+    def __init__(self, symbol, interval="1m"):
         self.symbol = symbol.upper()
+        logging.info(f'-------------------{self.symbol}-------------------')
         self.interval = interval.lower()
         self.data = {}
-        self.settings_path = settings_path
-        with open(self.settings_path, "r") as json_file:
+        with open(json_os_path[os.name], "r") as json_file:
             self.relation = json.load(json_file)
 
     def binance(self):
@@ -36,7 +40,7 @@ class CryptoCandle:
         ) as err:
             logging.error(f"{exchange.upper()} ERROR: {err}")
             return False
-        logging.info(f"{exchange.upper()} API : {get_data.url}")
+        #logging.info(f"{exchange.upper()} API : {get_data.url}")
         coin_data = get_data.json()
         candle = coin_data[-2]
         logging.info(f"{exchange.upper()} initial candle : {candle}")
@@ -50,6 +54,9 @@ class CryptoCandle:
             "Volume": round(float(candle[5]), 10),
         }
         logging.info(f"{exchange.upper()} result : {ohlcv}")
+        if ohlcv["Volume"] == 0 or ohlcv["High"] == ohlcv["Low"]:
+            return False
+
         return ohlcv
 
     def bitfinex(self):
@@ -67,9 +74,9 @@ class CryptoCandle:
         ) as err:
             logging.error(f"{exchange.upper()} ERROR: {err}")
             return False
-        logging.info(f"{exchange.upper()} API : {get_data.url}")
+        #logging.info(f"{exchange.upper()} API : {get_data.url}")
         coin_data = get_data.json()
-        logging.info(f"{exchange.upper()} Get Data: {coin_data}")
+        #logging.info(f"{exchange.upper()} Get Data: {coin_data}")
         candle = coin_data[-1]
         logging.info(f"{exchange.upper()} initial candle : {candle}")
         ohlcv = {
@@ -81,6 +88,9 @@ class CryptoCandle:
             "Volume": round(candle[5], 10),
         }
         logging.info(f"{exchange.upper()} result : {ohlcv}")
+        if ohlcv["Volume"] == 0 or ohlcv["High"] == ohlcv["Low"]:
+            return False
+
         return ohlcv
 
     def hitbtc(self):
@@ -102,9 +112,9 @@ class CryptoCandle:
         ) as err:
             logging.error(f"{exchange.upper()} ERROR: {err}")
             return False
-        logging.info(f"{exchange.upper()} API : {get_data.url}")
+        #logging.info(f"{exchange.upper()} API : {get_data.url}")
         coin_data = get_data.json()
-        logging.info(f"{exchange.upper()} Get Data: {coin_data}")
+        #logging.info(f"{exchange.upper()} Get Data: {coin_data}")
         candle = coin_data[-2]
         logging.info(f"{exchange.upper()} initial candle : {candle}")
         data_time = datetime.strptime(
@@ -118,6 +128,9 @@ class CryptoCandle:
             "Volume": round(float(candle["volume"]), 10),
         }
         logging.info(f"{exchange.upper()} result : {ohlcv}")
+        if ohlcv["Volume"] == 0 or ohlcv["High"] == ohlcv["Low"]:
+            return False
+
         return ohlcv
 
     def huobi(self):
@@ -139,7 +152,7 @@ class CryptoCandle:
         ) as err:
             logging.error(f"{exchange.upper()} ERROR: {err}")
             return False
-        logging.info(f"{exchange.upper()} API : {get_data.url}")
+        #logging.info(f"{exchange.upper()} API : {get_data.url}")
         coin_data = get_data.json()
         candle = coin_data["data"][1]
         logging.info(f"{exchange.upper()} initial candle : {candle}")
@@ -152,6 +165,8 @@ class CryptoCandle:
             "Volume": round(float(candle["amount"]), 10),
         }
         logging.info(f"{exchange.upper()} result : {ohlcv}")
+        if ohlcv["Volume"] == 0 or ohlcv["High"] == ohlcv["Low"]:
+            return False
         return ohlcv
 
     def kraken(self):
@@ -172,7 +187,7 @@ class CryptoCandle:
         ) as err:
             logging.error(f"{exchange.upper()} ERROR: {err}")
             return False
-        logging.info(f"{exchange.upper()} API : {get_data.url}")
+        #logging.info(f"{exchange.upper()} API : {get_data.url}")
         coin_data = get_data.json()
         # Так как в запросе нельзя настроить глубину выдачи данных
         # то запрос отдает несколько сотен свечей. Нам нужна для расчета
@@ -194,6 +209,8 @@ class CryptoCandle:
                     "Volume": float(candle[6]),
                 }
                 logging.info(f"{exchange.upper()} result : {ohlcv}")
+                if ohlcv["Volume"] == 0 or ohlcv["High"] == ohlcv["Low"]:
+                    return False
                 return ohlcv
 
     def get_previous_candle_time(self):
